@@ -1,15 +1,12 @@
 
-#include <SPI.h>         // Remember this line!
-#include <DAC_MCP49xx.h>
+#include <MCP4922.h>
+#include <SPI.h>
 
-// The Arduino pin used for the slave select / chip select
-#define SS_PIN 10
-
-// Set up the DAC. 
-// First argument: DAC model (MCP4901, MCP4911, MCP4921)
-// Second argument: SS pin (10 is preferred)
-// (The third argument, the LDAC pin, can be left out if not used)
-DAC_MCP49xx dac(DAC_MCP49xx::MCP4921, SS_PIN);
+MCP4922 dac1(51,52,10,5);    // (MOSI,SCK,CS,LDAC) define Connections for MEGA_board, 
+//MCP4922 DAC(11,13,10,5);    // (MOSI,SCK,CS,LDAC) define Connections for UNO_board, 
+MCP4922 dac2(51,52,10,5);  
+HardwareTimer timer(2);
+#define TIMER_RATE 10000
 
 #define phototrans 30
 #define relay PC13
@@ -25,7 +22,7 @@ DAC_MCP49xx dac(DAC_MCP49xx::MCP4921, SS_PIN);
 #define ratepot 0
 #define depthpot 1
 #define shiftpot 2
-#define audiosignal 3
+//#define audiosignal 3
 
 long debouncing_time = 15; //Debouncing Time in Milliseconds
 volatile unsigned long last_micros;
@@ -102,12 +99,12 @@ void setup() {
     // Set the SPI frequency to 1 MHz (on 16 MHz Arduinos), to be safe.
   // DIV2 = 8 MHz works for me, though, even on a breadboard.
   // This is not strictly required, as there is a default setting.
-  dac.setSPIDivider(SPI_CLOCK_DIV16);
+  //dac1.setSPIDivider(SPI_CLOCK_DIV16);
   
   // Use "port writes", see the manual page. In short, if you use pin 10 for
   // SS (and pin 7 for LDAC, if used), this is much faster.
   // Also not strictly required (no setup() code is needed at all).
-  dac.setPortWrite(true);
+  //dac1.setPortWrite(true);
   // put your setup code here, to run once:
   pinMode(led1, OUTPUT);
   pinMode(led2, OUTPUT);
@@ -124,18 +121,29 @@ void setup() {
       // disable all interrupts
   // Setup the second button with an internal pull-up :
   pinMode(btn_wave, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(btn_wave), CHANGEWAVE, LOW);
+  attachInterrupt(btn_wave, CHANGEWAVE, FALLING); // or rising / or change
   pinMode(btn_onoff, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(btn_onoff), ONANDOFF, LOW);
+  attachInterrupt(btn_onoff, ONANDOFF, FALLING); // or rising / or change
 
+
+
+//setupstm timer
+ timer.pause();
+timer.setPeriod(TIMER_RATE); // in microseconds
+  // Set up an interrupt on channel 1
+timer.setChannel1Mode(TIMER_OUTPUT_COMPARE);
+timer.setCompare(TIMER_CH1, 1);  // Interrupt 1 count after each update
+timer.attachCompare1Interrupt(handler);
+timer.refresh();
+timer.resume();
  
  //Setup Timer2 to fire every 1ms
-  TCCR2B = 0x00;        //Disbale Timer2 while we set it up
-  TCNT2  = 130;         //Reset Timer Count to 130 out of 255
-  TIFR2  = 0x00;        //Timer2 INT Flag Reg: Clear Timer Overflow Flag
-  TIMSK2 = 0x01;        //Timer2 INT Reg: Timer2 Overflow Interrupt Enable
-  TCCR2A = 0x00;        //Timer2 Control Reg A: Wave Gen Mode normal
-  TCCR2B = 0x05;        //Timer2 Control Reg B: Timer Prescaler set to 128
+ // TCCR2B = 0x00;        //Disbale Timer2 while we set it up
+ // TCNT2  = 130;         //Reset Timer Count to 130 out of 255
+ // TIFR2  = 0x00;        //Timer2 INT Flag Reg: Clear Timer Overflow Flag
+  //TIMSK2 = 0x01;        //Timer2 INT Reg: Timer2 Overflow Interrupt Enable
+ // TCCR2A = 0x00;        //Timer2 Control Reg A: Wave Gen Mode normal
+ // TCCR2B = 0x05;        //Timer2 Control Reg B: Timer Prescaler set to 128
  
 
   sine();
@@ -170,28 +178,26 @@ void loop() {
     h = ((pgm_read_word(&(DACLookup_Full24_6Bit[i])) * depth));
   }
 delayMicroseconds(actdelay);
-dac.output(h);
-
+dac1.Set(h);
+dac2.Set(h);
 
 }
 
-ISR(TIMER2_OVF_vect) {
+void handler(void) {
  checkthings();
-  TCNT2 = 130;           //Reset Timer to 130 out of 255
-  TIFR2 = 0x00;          //Timer2 INT Flag Reg: Clear Timer Overflow Flag
 }; 
 
 void checkthings(){
   //read depth pot and scale
-  deep = analogRead(A1);
+  deep = analogRead(depthpot);
   depth = map(deep, 0, 1023, 100, 0);
   depth   = (depth / 100);
 
   //read rate pot and add delay to make longer=
-  rate = analogRead(A0);
+  rate = analogRead(ratepot);
   rate = map(rate, 0, 1023, 0, 800); //last value here is the lowest frequency  (max 1023)
   
-  shift = analogRead(A2);
+  shift = analogRead(shiftpot);
   dong = map(shift, 0, 1023, 0, 100);
   wrong = map(shift, 0, 1023, 100, 0);
   dong  = (dong / 100);
@@ -210,11 +216,11 @@ HITIT();
 
 void HITIT(){
      if (state == 0) {
-      PORTB |= _BV(PB0); //8
+      relay == HIGH; 
       state = 1;
     }
     else {
-      PORTB &= ~_BV(PB0); //8
+      relay == LOW; 
       state = 0;
     }
     last_micros = micros();
@@ -252,25 +258,25 @@ void CHANGEWAVE() {
 }
 
 void sine() {
-PORTD |= _BV(PD0);
-PORTD &= ~_BV(PD7);
+digitalWrite(led1, HIGH);
+digitalWrite(led4, LOW);  
 breaker = 1;
 }
 
 void tri() {
-PORTD |= _BV(PD1);
-PORTD &= ~_BV(PD0);
+digitalWrite(led2, HIGH);
+digitalWrite(led1, LOW);  
 breaker = 2;
 }
 
 void squarer() {
-PORTD |= _BV(PD6);
-PORTD &= ~_BV(PD1);
+digitalWrite(led3, HIGH);
+digitalWrite(led2, LOW);  
 breaker = 3;
 }
 
 void dipper() {
-PORTD |= _BV(PD7);
-PORTD &= ~_BV(PD6);
+digitalWrite(led4, HIGH);
+digitalWrite(led3, LOW);  
 breaker = 4;
 }
