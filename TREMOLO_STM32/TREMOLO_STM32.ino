@@ -1,10 +1,47 @@
 
-#include <MCP4922.h>
+
 #include <SPI.h>
 
-MCP4922 dac1(51,52,10,5);    // (MOSI,SCK,CS,LDAC) define Connections for MEGA_board, 
-//MCP4922 DAC(11,13,10,5);    // (MOSI,SCK,CS,LDAC) define Connections for UNO_board, 
-MCP4922 dac2(51,52,10,5);  
+#define DAC_CS    PB12
+#define DAC_SCK   PB13
+#define DAC_MOSI  PB15
+
+#define DAC_FLAGS_A 0b00110000 //Select DAC channel A (MCP 4921 or (MCP 4922)
+#define DAC_FLAGS_B 0b10110000 //Select DAC channel B (only on MCP 4922)
+
+#define waveformLength 120
+
+
+SPIClass DAC_SPI(2); // use SPI-2 port
+
+void setup() {
+  pinMode(DAC_CS, OUTPUT);
+  digitalWrite(DAC_CS, HIGH);
+  DAC_SPI.begin();
+}
+
+
+
+  digitalWrite(DAC_CS, LOW);
+  DAC_SPI.transfer(hVal | DAC_FLAGS_A); //Send data to DAC output 'A' (MCP4921 pin 8 or MCP4922 pin 14)
+  DAC_SPI.transfer(hVal | DAC_FLAGS_B); //Send data to DAC output 'B' (MCP4922 pin 10)
+  DAC_SPI.transfer(lVal);
+  digitalWrite(DAC_CS, HIGH);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 HardwareTimer timer(2);
 #define TIMER_RATE 10000
 
@@ -179,7 +216,7 @@ void loop() {
   }
 delayMicroseconds(actdelay);
 dac1.Set(h);
-dac2.Set(h);
+
 
 }
 
