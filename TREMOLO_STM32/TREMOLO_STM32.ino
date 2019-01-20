@@ -1,67 +1,26 @@
 
 
-#include <SPI.h>
-
-#define DAC_CS    PB12
-#define DAC_SCK   PB13
-#define DAC_MOSI  PB15
-
-#define DAC_FLAGS_A 0b00110000 //Select DAC channel A (MCP 4921 or (MCP 4922)
-#define DAC_FLAGS_B 0b10110000 //Select DAC channel B (only on MCP 4922)
-
-#define waveformLength 120
-
-
-SPIClass DAC_SPI(2); // use SPI-2 port
-
-void setup() {
-  pinMode(DAC_CS, OUTPUT);
-  digitalWrite(DAC_CS, HIGH);
-  DAC_SPI.begin();
-}
-
-
-
-  digitalWrite(DAC_CS, LOW);
-  DAC_SPI.transfer(hVal | DAC_FLAGS_A); //Send data to DAC output 'A' (MCP4921 pin 8 or MCP4922 pin 14)
-  DAC_SPI.transfer(hVal | DAC_FLAGS_B); //Send data to DAC output 'B' (MCP4922 pin 10)
-  DAC_SPI.transfer(lVal);
-  digitalWrite(DAC_CS, HIGH);
-
-
-
-
-
-
-
-
-
-
-
-
-
+#include <Wire.h>
+#include "mcp4728.h"
+mcp4728 dac = mcp4728(0); // instantiate mcp4728 object, Device ID = 0
 
 
 HardwareTimer timer(2);
 #define TIMER_RATE 10000
 
+
+
+////do not define pins within global!!!!!
 #define phototrans 30
-#define relay PC13
+const int relay = 32;
 
-#define led1 38
-#define led2 39
-#define led3 40
-#define led4 41
 
-#define btn_onoff 3
-#define btn_wave 28
 
-#define ratepot 0
-#define depthpot 1
-#define shiftpot 2
-//#define audiosignal 3
+const int btn_onoff = 8;
 
-long debouncing_time = 15; //Debouncing Time in Milliseconds
+#define OTHERPOT 3
+
+long debouncing_time = 100; //Debouncing Time in Milliseconds
 volatile unsigned long last_micros;
 volatile unsigned long last_micros2;
 int led = 1;
@@ -133,32 +92,28 @@ const PROGMEM uint16_t DACLookup_Full24_6Bit[64] =
 
 void setup() {
 
-    // Set the SPI frequency to 1 MHz (on 16 MHz Arduinos), to be safe.
-  // DIV2 = 8 MHz works for me, though, even on a breadboard.
-  // This is not strictly required, as there is a default setting.
-  //dac1.setSPIDivider(SPI_CLOCK_DIV16);
-  
-  // Use "port writes", see the manual page. In short, if you use pin 10 for
-  // SS (and pin 7 for LDAC, if used), this is much faster.
-  // Also not strictly required (no setup() code is needed at all).
-  //dac1.setPortWrite(true);
-  // put your setup code here, to run once:
-  pinMode(led1, OUTPUT);
-  pinMode(led2, OUTPUT);
-  pinMode(led3, OUTPUT);
-  pinMode(led4, OUTPUT);
+dac.begin();  // initialize i2c interface
+dac.vdd(5000); // set VDD(mV) of MCP4728 for correct conversion between LSB and Vout
+  dac.setVref(0, 0);
+  pinMode(PA6, OUTPUT);
+  pinMode(PA7, OUTPUT);
+  pinMode(PB0, OUTPUT);
+  pinMode(PB1, OUTPUT);
 
   pinMode(relay, OUTPUT); //relay
 
 
 
-  pinMode(ratepot, INPUT);
-  pinMode(depthpot, INPUT);
-  pinMode(shiftpot, INPUT);
+  pinMode(PA0, INPUT);
+  pinMode(PA1, INPUT);
+  pinMode(PA2, INPUT);
+
       // disable all interrupts
   // Setup the second button with an internal pull-up :
-  pinMode(btn_wave, INPUT_PULLUP);
-  attachInterrupt(btn_wave, CHANGEWAVE, FALLING); // or rising / or change
+  pinMode(PB12, INPUT_PULLUP);
+  attachInterrupt(PB12, CHANGEWAVE, FALLING); // or rising / or change
+
+  
   pinMode(btn_onoff, INPUT_PULLUP);
   attachInterrupt(btn_onoff, ONANDOFF, FALLING); // or rising / or change
 
@@ -173,19 +128,10 @@ timer.setCompare(TIMER_CH1, 1);  // Interrupt 1 count after each update
 timer.attachCompare1Interrupt(handler);
 timer.refresh();
 timer.resume();
- 
- //Setup Timer2 to fire every 1ms
- // TCCR2B = 0x00;        //Disbale Timer2 while we set it up
- // TCNT2  = 130;         //Reset Timer Count to 130 out of 255
- // TIFR2  = 0x00;        //Timer2 INT Flag Reg: Clear Timer Overflow Flag
-  //TIMSK2 = 0x01;        //Timer2 INT Reg: Timer2 Overflow Interrupt Enable
- // TCCR2A = 0x00;        //Timer2 Control Reg A: Wave Gen Mode normal
- // TCCR2B = 0x05;        //Timer2 Control Reg B: Timer Prescaler set to 128
- 
 
-  sine();
+ sine();
  HITIT();
-  //PORTB |= _BV(PB0);
+
 }
 
 void loop() {
@@ -199,8 +145,6 @@ void loop() {
   else{
     actdelay = Bdel;
     }
-//uuuuuuu uuuuuuuuuuuuu
-// maybe shift change that I is faster / slower
 
   if (breaker == 1) {
     h = ((pgm_read_word(&(DACLookup_FullSine_6Bit[i])) * depth));
@@ -214,8 +158,9 @@ void loop() {
   else if (breaker == 4) {
     h = ((pgm_read_word(&(DACLookup_Full24_6Bit[i])) * depth));
   }
-delayMicroseconds(actdelay);
-dac1.Set(h);
+delayMicroseconds(actdelay*5);
+dac.voutWrite(h, 4095, h/2, 2048);
+
 
 
 }
@@ -226,17 +171,17 @@ void handler(void) {
 
 void checkthings(){
   //read depth pot and scale
-  deep = analogRead(depthpot);
-  depth = map(deep, 0, 1023, 100, 0);
+  deep = analogRead(PA1);
+  depth = map(deep, 0, 4095, 100, 0);
   depth   = (depth / 100);
 
   //read rate pot and add delay to make longer=
-  rate = analogRead(ratepot);
-  rate = map(rate, 0, 1023, 0, 800); //last value here is the lowest frequency  (max 1023)
-  
-  shift = analogRead(shiftpot);
-  dong = map(shift, 0, 1023, 0, 100);
-  wrong = map(shift, 0, 1023, 100, 0);
+  rate = analogRead(PA0);
+
+  //read shift
+  shift = analogRead(PA2);
+  dong = map(shift, 0, 4095, 0, 100);
+  wrong = map(shift, 0, 4095, 100, 0);
   dong  = (dong / 100);
   wrong  = (wrong / 100);
 
@@ -267,6 +212,8 @@ void HITIT(){
   
 void CHANGEWAVE() {
   if ((long)(micros() - last_micros2) >= debouncing_time * 1000) {
+   
+    ONANDOFF();
     led++;
     if (led >= 5) {
       led = 1;
@@ -295,25 +242,25 @@ void CHANGEWAVE() {
 }
 
 void sine() {
-digitalWrite(led1, HIGH);
-digitalWrite(led4, LOW);  
+digitalWrite(PA6, HIGH);
+digitalWrite(PB1, LOW);  
 breaker = 1;
 }
 
 void tri() {
-digitalWrite(led2, HIGH);
-digitalWrite(led1, LOW);  
+digitalWrite(PA7, HIGH);
+digitalWrite(PA6, LOW);  
 breaker = 2;
 }
 
 void squarer() {
-digitalWrite(led3, HIGH);
-digitalWrite(led2, LOW);  
+digitalWrite(PB0, HIGH);
+digitalWrite(PA7, LOW);  
 breaker = 3;
 }
 
 void dipper() {
-digitalWrite(led4, HIGH);
-digitalWrite(led3, LOW);  
+digitalWrite(PB1, HIGH);
+digitalWrite(PB0, LOW);  
 breaker = 4;
 }
