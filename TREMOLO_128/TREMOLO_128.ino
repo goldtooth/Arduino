@@ -1,6 +1,4 @@
 
-
-
 #include <SPI.h>         // Remember this line!
 #include <DAC_MCP49xx.h>
 #include <math.h>
@@ -33,19 +31,13 @@ DAC_MCP49xx dac(DAC_MCP49xx::MCP4921, SS_PIN);
 long debouncing_time = 15; //Debouncing Time in Milliseconds
 volatile unsigned long last_micros;
 volatile unsigned long last_micros2;
-volatile unsigned long last_micros3;
-int iii;
 int led = 1;
 int i;
-int b; 
-int enact = 1;
-int wavetablelength = 64;
-int relay_damper_ms = 10;
+int b;
 uint16_t h;
 int breaker = 1;
 int rate;
 int state = 0;
-int hate = 0;
 int val;
 int actdelay;
 float dong;
@@ -57,33 +49,52 @@ float depth;
 float shift;
 int timer1_counter;
 
-const PROGMEM uint16_t DACLookup_FullSine_6Bit[64] =
+const PROGMEM uint16_t DACLookup_FullSine_6Bit[128] =
 {
-  2048, 2248, 2447, 2642, 2831, 3013, 3185, 3346,
-  3495, 3630, 3750, 3853, 3939, 4007, 4056, 4085,
-  4095, 4085, 4056, 4007, 3939, 3853, 3750, 3630,
-  3495, 3346, 3185, 3013, 2831, 2642, 2447, 2248,
-  2048, 1847, 1648, 1453, 1264, 1082,  910,  749,
-   600,  465,  345,  242,  156,   88,   39,   10,
-     0,   10,   39,   88,  156,  242,  345,  465,
-   600,  749,  910, 1082, 1264, 1453, 1648, 1847,
-   
+2048,2148,2248,2348,2447,2545,2642,2737,
+2831,2923,3013,3100,3185,3267,3346,3423,
+3495,3565,3630,3692,3750,3804,3853,3898,
+3939,3975,4007,4034,4056,4073,4085,4093,
+4095,4093,4085,4073,4056,4034,4007,3975,
+3939,3898,3853,3804,3750,3692,3630,3565,
+3495,3423,3346,3267,3185,3100,3013,2923,
+2831,2737,2642,2545,2447,2348,2248,2148,
+2048,1947,1847,1747,1648,1550,1453,1358,
+1264,1172,1082,995,910,828,749,672,
+600,530,465,403,345,291,242,197,
+156,120,88,61,39,22,10,2,
+0,2,10,22,39,61,88,120,
+156,197,242,291,345,403,465,530,
+600,672,749,828,910,995,1082,1172,
+1264,1358,1453,1550,1648,1747,1847,1947,
 };
-const PROGMEM uint16_t DACLookup_FullTriangle_6Bit[64] =
+const PROGMEM uint16_t DACLookup_FullTriangle_6Bit[128] =
 {
-  0,   10,   39,   88,  156,  242,  345,  465,
-   600,  749,  910, 1082, 1264, 1453, 1648, 1847,
-  2048, 2248, 2447, 2642, 2831, 3013, 3185, 3346,
-  3495, 3630, 3750, 3853, 3939, 4007, 4056, 4085,
-  4095, 4085, 4056, 4007, 3939, 3853, 3750, 3630,
-  3495, 3346, 3185, 3013, 2831, 2642, 2447, 2248,
-  2048, 1847, 1648, 1453, 1264, 1082,  910,  749,
-   600,  465,  345,  242,  156,   88,   39,   10,
+64,128,192,256,320,384,448,512,
+576,640,704,768,832,896,960,1024,
+1088,1152,1216,1280,1344,1408,1472,1536,
+1600,1664,1728,1792,1856,1920,1984,2048,
+2111,2175,2239,2303,2367,2431,2495,2559,
+2623,2687,2751,2815,2879,2943,3007,3071,
+3135,3199,3263,3327,3391,3455,3519,3583,
+3647,3711,3775,3839,3903,3967,4031,4095,
+4031,3967,3903,3839,3775,3711,3647,3583,
+3519,3455,3391,3327,3263,3199,3135,3071,
+3007,2943,2879,2815,2751,2687,2623,2559,
+2495,2431,2367,2303,2239,2175,2111,2048,
+1984,1920,1856,1792,1728,1664,1600,1536,
+1472,1408,1344,1280,1216,1152,1088,1024,
+960,896,832,768,704,640,576,512,
+448,384,320,256,192,128,64,0,
 
 };
 
-const PROGMEM uint16_t DACLookup_FullSquare_6Bit[64] =
+const PROGMEM uint16_t DACLookup_FullSquare_6Bit[128] =
 {
+  4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
+  4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
+  4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
+  4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
   4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
   4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
   4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
@@ -91,36 +102,31 @@ const PROGMEM uint16_t DACLookup_FullSquare_6Bit[64] =
   0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
 };
 
-const PROGMEM uint16_t DACLookup_Full24_6Bit[192] =
+const PROGMEM uint16_t DACLookup_Full24_6Bit[128] =
 {
- 0, 0, 0, 0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0, 0, 0, 0,
-1082, 2048, 4095, 4095, 4095, 4095, 4095, 4095,
-4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-4095, 4095, 4095, 4095, 4095, 4095, 2048, 1082,
- 0, 0, 0, 0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0, 0, 0, 0,
- 0, 0, 0, 0, 0, 0, 0, 0,
-1082, 2048, 4095, 4095, 4095, 4095, 4095, 4095,
-4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-
+  1024, 2048, 4095, 4095, 4095, 4095, 4095, 4095,
+  4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
+  4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
+  4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
+  4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
+  4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
+  4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
+  4095, 4095, 4095, 4095, 4095, 4095, 2048, 1024,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  1024, 2048, 4095, 4095, 4095, 4095, 4095, 4095,
+  4095, 4095, 4095, 4095, 4095, 4095, 2048, 1024,
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0,
 };
 
 void setup() {
@@ -141,7 +147,6 @@ void setup() {
   pinMode(led4, OUTPUT);
 
   pinMode(relay, OUTPUT); //relay
-  pinMode(phototrans, OUTPUT); //relay
 
 
 
@@ -151,9 +156,9 @@ void setup() {
       // disable all interrupts
   // Setup the second button with an internal pull-up :
   pinMode(btn_wave, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(btn_wave), CHANGEWAVE, LOW); //FALLING? OR RISING? as a way to not have theinterupt triggering when depressed for a long time
+  attachInterrupt(digitalPinToInterrupt(btn_wave), CHANGEWAVE, LOW);
   pinMode(btn_onoff, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(btn_onoff), ONANDOFF, FALLING);
+  attachInterrupt(digitalPinToInterrupt(btn_onoff), ONANDOFF, LOW);
 
  
  //Setup Timer2 to fire every 1ms
@@ -164,26 +169,25 @@ void setup() {
   TCCR2A = 0x00;        //Timer2 Control Reg A: Wave Gen Mode normal
   TCCR2B = 0x05;        //Timer2 Control Reg B: Timer Prescaler set to 128
  
-  digitalWrite(phototrans,LOW);
+
   sine();
- 
+ HITIT();
   //PORTB |= _BV(PB0);
 }
 
 void loop() {
 
-
-
-  
   i++;
-  if (i >= wavetablelength) {i = 0; 
+  if (i >= 128) {i = 0; 
   }
-  if(i <= (wavetablelength/2)){
+  if(i <= 64){
     actdelay = Adel;
     }
   else{
     actdelay = Bdel;
     }
+//uuuuuuu uuuuuuuuuuuuu
+// maybe shift change that I is faster / slower
 
   if (breaker == 1) {
     h = ((pgm_read_word(&(DACLookup_FullSine_6Bit[i])) * depth));
@@ -198,19 +202,16 @@ void loop() {
     h = ((pgm_read_word(&(DACLookup_Full24_6Bit[i])) * depth));
   }
 delayMicroseconds(actdelay);
-
 dac.output(h);
 
 
 }
 
-extern "C" {
 ISR(TIMER2_OVF_vect) {
  checkthings();
   TCNT2 = 130;           //Reset Timer to 130 out of 255
   TIFR2 = 0x00;          //Timer2 INT Flag Reg: Clear Timer Overflow Flag
 }; 
-}
 
 void checkthings(){
   //read depth pot and scale
@@ -221,7 +222,7 @@ void checkthings(){
   //read rate pot and add delay to make longer=
   rate = analogRead(ratepot);
   //rate = map(rate, 0, 1023, 0, 800); //last value here is the lowest frequency  (max 1023)
-  rate = fscale( 0, 1023, 10, 1000, rate, -4);
+  rate = fscale( 0, 1023, 0, 1000, rate, 0);
   shift = analogRead(shiftpot);
   dong = map(shift, 0, 1023, 0, 100);
   wrong = map(shift, 0, 1023, 100, 0);
@@ -234,20 +235,13 @@ void checkthings(){
 }
 
 void ONANDOFF() {
-
-
-
-if ((long)(micros() - last_micros) >= debouncing_time * 1000) {
-TOGGLE_SS_RELAY();
-TOGGLE_HW_RELAY();
-last_micros = micros();
-
+  if ((long)(micros() - last_micros) >= debouncing_time * 1000) {
+HITIT();
+}
 }
 
-}
-
-void TOGGLE_HW_RELAY(){
-if (state == 0) {
+void HITIT(){
+     if (state == 0) {
       PORTB |= _BV(PB0); //8
       state = 1;
     }
@@ -255,26 +249,13 @@ if (state == 0) {
       PORTB &= ~_BV(PB0); //8
       state = 0;
     }
-    TOGGLE_SS_RELAY();
+    last_micros = micros();
+//PORTB |= _BV(PB0);
+//PORTB &= ~_BV(PB0);
  } 
-
-
-void TOGGLE_SS_RELAY(){
-if (hate == 0) {
-    
-    digitalWrite(phototrans,HIGH);
-      hate = 1;
-    }
-    else {
-    digitalWrite(phototrans,LOW);
-     hate = 0;
-    }
-  }
-
- 
   
 void CHANGEWAVE() {
-  if ((long)(micros() - last_micros2) >= debouncing_time * 250) {
+  if ((long)(micros() - last_micros2) >= debouncing_time * 1000) {
     led++;
     if (led >= 5) {
       led = 1;
@@ -306,28 +287,24 @@ void sine() {
 PORTD |= _BV(PD0);
 PORTD &= ~_BV(PD7);
 breaker = 1;
-wavetablelength = 64;
 }
 
 void tri() {
 PORTD |= _BV(PD1);
 PORTD &= ~_BV(PD0);
 breaker = 2;
-wavetablelength = 64;
 }
 
 void squarer() {
 PORTD |= _BV(PD6);
 PORTD &= ~_BV(PD1);
 breaker = 3;
-wavetablelength = 64;
 }
 
 void dipper() {
 PORTD |= _BV(PD7);
 PORTD &= ~_BV(PD6);
 breaker = 4;
-wavetablelength = 192;
 }
 
 float fscale( float originalMin, float originalMax, float newBegin, float

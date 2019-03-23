@@ -3,6 +3,7 @@
 #include <Wire.h>
 #include "mcp4728.h"
 mcp4728 dac = mcp4728(0); // instantiate mcp4728 object, Device ID = 0
+#include <math.h>
 
 
 HardwareTimer timer(2);
@@ -11,7 +12,7 @@ HardwareTimer timer(2);
 
 
 ////do not define pins within global!!!!!
-#define phototrans 30
+const int phototrans = 30;
 const int relay = 32;
 
 
@@ -23,6 +24,7 @@ const int btn_onoff = 8;
 long debouncing_time = 100; //Debouncing Time in Milliseconds
 volatile unsigned long last_micros;
 volatile unsigned long last_micros2;
+int poop = 1;
 int led = 1;
 int i;
 int b;
@@ -40,6 +42,12 @@ float deep;
 float depth;
 float shift;
 int timer1_counter;
+
+// using a power of 2 for the filterWeight will allow the compiler to optimise the calculation 
+const int filterWeight = 16; // higher numbers = heavier filtering 
+const int numReadings = 20 ;
+int average;
+
 
 const PROGMEM uint16_t DACLookup_FullSine_6Bit[64] =
 {
@@ -94,7 +102,8 @@ void setup() {
 
 dac.begin();  // initialize i2c interface
 dac.vdd(5000); // set VDD(mV) of MCP4728 for correct conversion between LSB and Vout
-  dac.setVref(0, 0);
+dac.setVref(0,0,0,0);
+
   pinMode(PA6, OUTPUT);
   pinMode(PA7, OUTPUT);
   pinMode(PB0, OUTPUT);
@@ -131,10 +140,10 @@ timer.resume();
 
  sine();
  HITIT();
-
 }
 
 void loop() {
+  
 
   i++;
   if (i >= 64) {i = 0; 
@@ -158,10 +167,9 @@ void loop() {
   else if (breaker == 4) {
     h = ((pgm_read_word(&(DACLookup_Full24_6Bit[i])) * depth));
   }
-delayMicroseconds(actdelay*5);
-dac.voutWrite(h, 4095, h/2, 2048);
-
-
+delayMicroseconds(rate);
+dac.voutWrite(shift, deep, deep, rate);
+  
 
 }
 
@@ -170,16 +178,17 @@ void handler(void) {
 }; 
 
 void checkthings(){
-  //read depth pot and scale
+ //read depth pot and scale
   deep = analogRead(PA1);
   depth = map(deep, 0, 4095, 100, 0);
   depth   = (depth / 100);
 
   //read rate pot and add delay to make longer=
-  rate = analogRead(PA0);
-
-  //read shift
-  shift = analogRead(PA2);
+  rate = analogRead(PA2);
+  //rate = map(rate, 0, 1023, 0, 800); //last value here is the lowest frequency  (max 1023)
+  //rate = map(rate, 0, 4095, 10, 1000);
+  
+  shift = analogRead(PA3);
   dong = map(shift, 0, 4095, 0, 100);
   wrong = map(shift, 0, 4095, 100, 0);
   dong  = (dong / 100);
@@ -187,7 +196,12 @@ void checkthings(){
 
   Adel = rate*dong;
   Bdel = rate*wrong;
+
  
+for (int k = 0; k < numReadings; k++) { average = average + (rate - average) / filterWeight; }
+
+  
+
 }
 
 void ONANDOFF() {
@@ -197,14 +211,28 @@ HITIT();
 }
 
 void HITIT(){
-     if (state == 0) {
-      relay == HIGH; 
-      state = 1;
+   poop++;
+    if (poop >= 4) {
+     poop = 1;
     }
-    else {
-      relay == LOW; 
-      state = 0;
+    switch (led) {
+    case 1:
+      relay == LOW;
+      phototrans ==LOW;
+      break;
+    case 2:
+      relay == HIGH;
+      phototrans ==LOW;
+      break;
+          case 3:
+      relay == LOW;
+      phototrans ==HIGH;
+      break;
+         
     }
+
+
+    
     last_micros = micros();
 //PORTB |= _BV(PB0);
 //PORTB &= ~_BV(PB0);
