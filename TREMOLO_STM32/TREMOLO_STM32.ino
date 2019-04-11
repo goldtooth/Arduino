@@ -12,16 +12,8 @@ HardwareTimer timer(2);
 
 
 ////do not define pins within global!!!!!
-const int phototrans = 30;
-const int relay = 32;
 
-
-
-const int btn_onoff = 8;
-
-#define OTHERPOT 3
-
-long debouncing_time = 100; //Debouncing Time in Milliseconds
+long debouncing_time = 150; //Debouncing Time in Milliseconds
 volatile unsigned long last_micros;
 volatile unsigned long last_micros2;
 int poop = 1;
@@ -42,94 +34,54 @@ float deep;
 float depth;
 float shift;
 int timer1_counter;
-
-// using a power of 2 for the filterWeight will allow the compiler to optimise the calculation 
-const int filterWeight = 16; // higher numbers = heavier filtering 
-const int numReadings = 20 ;
-int average;
-
-
-const PROGMEM uint16_t DACLookup_FullSine_6Bit[64] =
-{
-  2048, 2248, 2447, 2642, 2831, 3013, 3185, 3346,
-  3495, 3630, 3750, 3853, 3939, 4007, 4056, 4085,
-  4095, 4085, 4056, 4007, 3939, 3853, 3750, 3630,
-  3495, 3346, 3185, 3013, 2831, 2642, 2447, 2248,
-  2048, 1847, 1648, 1453, 1264, 1082,  910,  749,
-   600,  465,  345,  242,  156,   88,   39,   10,
-     0,   10,   39,   88,  156,  242,  345,  465,
-   600,  749,  910, 1082, 1264, 1453, 1648, 1847,
-   
-};
-const PROGMEM uint16_t DACLookup_FullTriangle_6Bit[64] =
-{
-  0,   10,   39,   88,  156,  242,  345,  465,
-   600,  749,  910, 1082, 1264, 1453, 1648, 1847,
-  2048, 2248, 2447, 2642, 2831, 3013, 3185, 3346,
-  3495, 3630, 3750, 3853, 3939, 4007, 4056, 4085,
-  4095, 4085, 4056, 4007, 3939, 3853, 3750, 3630,
-  3495, 3346, 3185, 3013, 2831, 2642, 2447, 2248,
-  2048, 1847, 1648, 1453, 1264, 1082,  910,  749,
-   600,  465,  345,  242,  156,   88,   39,   10,
-
-};
-
-const PROGMEM uint16_t DACLookup_FullSquare_6Bit[64] =
-{
-  4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-  4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-  4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-  4095, 4095, 4095, 4095, 4095, 4095, 4095, 4095,
-  0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0
-};
-
-const PROGMEM uint16_t DACLookup_Full24_6Bit[64] =
-{
-0, 0, 0, 0, 0, 0, 0, 0,
-1082, 2048, 4095, 4095, 4095, 4095, 2048, 1082,
-0, 0, 0, 0, 0, 0, 0, 0,
-1082, 2048, 4095, 4095, 4095, 4095, 4095, 4095,
-4095,4095,4095,4095,4095,4095,4095,4095,
-4095,4095,4095,4095,4095,4095,4095,4095,
-4095,4095,4095,4095,4095,4095,4095,4095,
-4095,4095,4095,4095,4095,4095,4095,4095
-};
+int POT1;
+int POT2;
+int POT3;
+int POT4;
+int POT5;
+int hate;
+int AUDIN;
 
 void setup() {
-
+disableDebugPorts();
 dac.begin();  // initialize i2c interface
-dac.vdd(5000); // set VDD(mV) of MCP4728 for correct conversion between LSB and Vout
+dac.vdd(3300); // set VDD(mV) of MCP4728 for correct conversion between LSB and Vout
 dac.setVref(0,0,0,0);
-
-  pinMode(PA6, OUTPUT);
-  pinMode(PA7, OUTPUT);
-  pinMode(PB0, OUTPUT);
-  pinMode(PB1, OUTPUT);
-
-  pinMode(relay, OUTPUT); //relay
+//dac.setVref(1,1,1,1);
 
 
+  pinMode(PA8, OUTPUT);
+  pinMode(PA9, OUTPUT);
+  pinMode(PA10, OUTPUT);
+  pinMode(PA11, OUTPUT);
+  pinMode(PB4, OUTPUT);
+  pinMode(PB5, OUTPUT);
 
-  pinMode(PA0, INPUT);
+
+  pinMode(PA12, OUTPUT); //relay
+  pinMode(PA15, OUTPUT); //relay
+
+
+  pinMode(PA0, INPUT_ANALOG);
   pinMode(PA1, INPUT);
   pinMode(PA2, INPUT);
+  pinMode(PA3, INPUT);
+  pinMode(PA4, INPUT);
+  pinMode(PA5, INPUT);
+
 
       // disable all interrupts
   // Setup the second button with an internal pull-up :
-  pinMode(PB12, INPUT_PULLUP);
-  attachInterrupt(PB12, CHANGEWAVE, FALLING); // or rising / or change
+  pinMode(PB13, INPUT_PULLUP);
+  attachInterrupt(PB13, CHANGEPRESET, FALLING); // or rising / or change
 
   
-  pinMode(btn_onoff, INPUT_PULLUP);
-  attachInterrupt(btn_onoff, ONANDOFF, FALLING); // or rising / or change
-
+  pinMode(PB12, INPUT_PULLUP);
+  attachInterrupt(PB12, ONANDOFF, FALLING); // or rising / or change
 
 
 //setupstm timer
- timer.pause();
+timer.pause();
 timer.setPeriod(TIMER_RATE); // in microseconds
   // Set up an interrupt on channel 1
 timer.setChannel1Mode(TIMER_OUTPUT_COMPARE);
@@ -138,157 +90,152 @@ timer.attachCompare1Interrupt(handler);
 timer.refresh();
 timer.resume();
 
- sine();
- HITIT();
+
+
+digitalWrite(PA8,LOW);
+digitalWrite(PA9,LOW);
+digitalWrite(PA10,LOW);
+digitalWrite(PA11,LOW);
+digitalWrite(PB4,LOW);
+digitalWrite(PB5,LOW);
+  one();
 }
 
 void loop() {
-  
 
-  i++;
-  if (i >= 64) {i = 0; 
-  }
-  if(i <= 32){
-    actdelay = Adel;
-    }
-  else{
-    actdelay = Bdel;
-    }
 
-  if (breaker == 1) {
-    h = ((pgm_read_word(&(DACLookup_FullSine_6Bit[i])) * depth));
-  }
-  else if (breaker == 2) {
-    h = ((pgm_read_word(&(DACLookup_FullTriangle_6Bit[i])) * depth));
-  }
-  else if (breaker == 3) {
-    h = ((pgm_read_word(&(DACLookup_FullSquare_6Bit[i])) * depth));
-  }
-  else if (breaker == 4) {
-    h = ((pgm_read_word(&(DACLookup_Full24_6Bit[i])) * depth));
-  }
-delayMicroseconds(rate);
-dac.voutWrite(shift, deep, deep, rate);
-  
 
+dac.analogWrite(POT1,POT2,POT3,AUDIN+POT4);;
 }
 
 void handler(void) {
  checkthings();
 }; 
 
+
+
+
+
 void checkthings(){
  //read depth pot and scale
-  deep = analogRead(PA1);
-  depth = map(deep, 0, 4095, 100, 0);
-  depth   = (depth / 100);
-
-  //read rate pot and add delay to make longer=
-  rate = analogRead(PA2);
-  //rate = map(rate, 0, 1023, 0, 800); //last value here is the lowest frequency  (max 1023)
-  //rate = map(rate, 0, 4095, 10, 1000);
-  
-  shift = analogRead(PA3);
-  dong = map(shift, 0, 4095, 0, 100);
-  wrong = map(shift, 0, 4095, 100, 0);
-  dong  = (dong / 100);
-  wrong  = (wrong / 100);
-
-  Adel = rate*dong;
-  Bdel = rate*wrong;
-
- 
-for (int k = 0; k < numReadings; k++) { average = average + (rate - average) / filterWeight; }
-
-  
-
+  POT1 = analogRead(PA1);
+    POT2 = analogRead(PA2);
+      POT3 = analogRead(PA3);
+        POT4 = analogRead(PA4);
+          POT5 = analogRead(PA5);
+          AUDIN = analogRead(PA0);
 }
+
+
+
 
 void ONANDOFF() {
-  if ((long)(micros() - last_micros) >= debouncing_time * 10) {
-HITIT();
+if ((long)(micros() - last_micros) >= debouncing_time * 1500) {
+TOGGLE_SS_RELAY();
+TOGGLE_HW_RELAY();
+last_micros = micros();
+
 }
+
 }
 
-void HITIT(){
-   poop++;
-    if (poop >= 4) {
-     poop = 1;
+void TOGGLE_HW_RELAY(){
+if (state == 0) {
+  digitalWrite(PA15, HIGH);
+     // PORTA |= _BV(PA15); //8
+      state = 1;
     }
-    switch (led) {
-    case 1:
-      relay == LOW;
-      phototrans ==LOW;
-      break;
-    case 2:
-      relay == HIGH;
-      phototrans ==LOW;
-      break;
-          case 3:
-      relay == LOW;
-      phototrans ==HIGH;
-      break;
-         
+    else {
+      digitalWrite(PA15, LOW);
+     // PORTA &= ~_BV(PA15); //8
+      state = 0;
     }
-
-
-    
-    last_micros = micros();
-//PORTB |= _BV(PB0);
-//PORTB &= ~_BV(PB0);
+    TOGGLE_SS_RELAY();
  } 
+
+
+void TOGGLE_SS_RELAY(){
+if (hate == 0) {
+    
+    digitalWrite(PA12,HIGH);
+      hate = 1;
+    }
+    else {
+    digitalWrite(PA12,LOW);
+     hate = 0;
+    }
+  }
   
-void CHANGEWAVE() {
-  if ((long)(micros() - last_micros2) >= debouncing_time * 1000) {
+
+void CHANGEPRESET() {
+  if ((long)(micros() - last_micros2) >= debouncing_time * 1500) {
    
-    ONANDOFF();
+   
     led++;
-    if (led >= 5) {
+    if (led >= 7) {
       led = 1;
     }
     last_micros2 = micros();
   }
   switch (led) {
     case 1:
-      sine();
+      one();
       break;
 
     case 2:
-      tri();
+      two();
       break;
 
     case 3:
-      squarer();
+      three();
       break;
 
-    case 4:
-      
-     
-      dipper();
+    case 4:     
+      four();
+      break;
+
+    case 5:
+      five();
+      break;
+
+    case 6:     
+      six();
       break;
   }
 }
 
-void sine() {
-digitalWrite(PA6, HIGH);
-digitalWrite(PB1, LOW);  
+void one() {
+digitalWrite(PA8, HIGH);
+digitalWrite(PB5, LOW);  
 breaker = 1;
 }
 
-void tri() {
-digitalWrite(PA7, HIGH);
-digitalWrite(PA6, LOW);  
+void two() {
+digitalWrite(PA9, HIGH);
+digitalWrite(PA8, LOW);  
 breaker = 2;
 }
 
-void squarer() {
-digitalWrite(PB0, HIGH);
-digitalWrite(PA7, LOW);  
+void three() {
+digitalWrite(PA10, HIGH);
+digitalWrite(PA9, LOW);  
 breaker = 3;
 }
 
-void dipper() {
-digitalWrite(PB1, HIGH);
-digitalWrite(PB0, LOW);  
+void four() {
+digitalWrite(PA11, HIGH);
+digitalWrite(PA10, LOW);  
 breaker = 4;
+}
+
+void five() {
+digitalWrite(PB4, HIGH);
+digitalWrite(PA11, LOW);  
+breaker = 5;
+}
+
+void six() {
+digitalWrite(PB5, HIGH);
+digitalWrite(PB4, LOW);  
+breaker = 6;
 }

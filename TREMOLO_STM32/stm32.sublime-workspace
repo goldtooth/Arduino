@@ -1,0 +1,282 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "/Users/nickpacker/Documents/Arduino/TREMOLO/TREMOLO.ino",
+			"settings":
+			{
+				"buffer_size": 9621,
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			],
+			[
+				"Deviot: ",
+				"Deviot: Find/Install Library"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 184.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/Users/nickpacker/Documents/Arduino/TREMOLO_STM32/Goldtooth STM32 PINOUTS",
+		"/Users/nickpacker/Documents/Arduino/TREMOLO_STM32/TREMOLO_STM32.ino",
+		"/Users/nickpacker/Documents/Arduino/TREMOLO/TREMOLO.ino",
+		"/Users/nickpacker/Documents/Arduino/ATTINY45_BYPASS/ATTINY45_BYPASS.ino",
+		"/Users/nickpacker/Library/Arduino15/packages/arduino/tools/avr-gcc/5.4.0-atmel3.6.1-arduino2/avr/include/avr/io.h",
+		"/Users/nickpacker/Library/Arduino15/packages/arduino/hardware/avr/1.6.23/cores/arduino/Arduino.h",
+		"/Users/nickpacker/Documents/Arduino/attiny8pin.h",
+		"/Users/nickpacker/Library/Arduino15/packages/arduino/tools/avr-gcc/5.4.0-atmel3.6.1-arduino2/avr/include/util/delay.h",
+		"/Users/nickpacker/Library/Arduino15/packages/arduino/hardware/avr/1.6.23/cores/arduino/USBAPI.h",
+		"/Users/nickpacker/Documents/Arduino/libraries/SPI/src/SPI.h",
+		"/Users/nickpacker/Library/Application Support/Sublime Text 3/Packages/User/Stino/Default (OSX).sublime-keymap",
+		"/Users/nickpacker/Library/Arduino15/packages.stino-settings",
+		"/Users/nickpacker/Library/Application Support/Sublime Text 3/Packages/User/Stino/app_dir.stino-settings",
+		"/Users/nickpacker/Library/Arduino15/config.stino-settings",
+		"/applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/Arduino.h",
+		"/applications/Arduino.app/Contents/Java/hardware/arduino/avr/cores/arduino/main.cpp",
+		"/Users/nickpacker/Documents/Arduino/libraries/mcp4728-master-GOOD/mcp4728.h",
+		"/Users/nickpacker/Documents/Arduino/libraries/mcp4728-master-GOOD/mcp4728.cpp",
+		"/Users/nickpacker/Documents/EAGLE/projects/ORDERED_2018-10-31/combined.gtp",
+		"/Users/nickpacker/Documents/EAGLE/projects/ORDERED_2018-10-31/FZZ_V3/solderpaste_topnew.gbr",
+		"/Users/nickpacker/Documents/EAGLE/projects/Gerbers/Gerber_V3.3/stencil/stencil.gbr",
+		"/Users/nickpacker/Downloads/mcp4728_library-v1.3/mcp4728/examples/BasicUse/BasicUse.pde",
+		"/Users/nickpacker/Documents/Arduino/libraries/Adafruit_MCP4725-master/Adafruit_MCP4725.cpp",
+		"/Users/nickpacker/Documents/Arduino/MCP4728-master/MCP4728.h",
+		"/Users/nickpacker/Documents/Arduino/libraries/MCP4922-Arduino-SPI-Library-master/MCP4922.h",
+		"/Users/nickpacker/Documents/Arduino/libraries/MCP4922-Arduino-SPI-Library-master/MCP4922.cpp",
+		"/Users/nickpacker/Documents/Arduino/libraries/DAC_MCP49xx/DAC_MCP49xx.h",
+		"/Users/nickpacker/Documents/EAGLE/projects/V2/FZZSHP/FZZSHAP.cop",
+		"/Users/nickpacker/Documents/EAGLE/projects/V2/FZZSHP/README.md",
+		"/Users/nickpacker/Documents/EAGLE/projects/V2/TRMONE/README.md",
+		"/Users/nickpacker/stm32loader.py",
+		"/Users/nickpacker/go/terminal_code_nesting",
+		"/Users/nickpacker/go/src/github.com/fogleman/pack3d/cmd/binpack/main.go",
+		"/Users/nickpacker/go/src/github.com/fogleman/pack3d/cmd/pack3d/main.go",
+		"/Users/nickpacker/go/src/github.com/fogleman/pack3d/pack3d/model.go",
+		"/Users/nickpacker/go/src/github.com/fogleman/pack3d/pack3d/bvh.go",
+		"/Users/nickpacker/go/src/github.com/fogleman/pack3d/pack3d/axis.go",
+		"/Users/nickpacker/go/src/github.com/fogleman/simplify/cmd/simplify/main.go",
+		"/Users/nickpacker/go/src/github.com/fogleman/pack3d/pack3d/anneal.go",
+		"/Users/nickpacker/go/src/github.com/fogleman/pack3d/binpack/pack.go",
+		"/Users/nickpacker/go/src/github.com/fogleman/pack3d/binpack/vector.go",
+		"/Users/nickpacker/go/src/github.com/fogleman/pack3d/binpack/spatial.go",
+		"/Users/nickpacker/go/src/github.com/fogleman/pack3d/cmd/bvh/main.go",
+		"/Users/nickpacker/go/src/github.com/fogleman/pack3d/cmd/meshinfo/main.go",
+		"/Users/nickpacker/go/src/github.com/fogleman/pack3d/cmd/separate/main.go",
+		"/Users/nickpacker/go/src/github.com/fogleman/pack3d/cmd/sort/main.go",
+		"/Users/nickpacker/go/pack3d/cmd/pack3d/main.go",
+		"/Users/nickpacker/go/pack3d/binpack/pack.go",
+		"/Users/nickpacker/go/bin/binpack",
+		"/Users/nickpacker/go/30mm.stl",
+		"/Users/nickpacker/go/25mm.stl",
+		"/Users/nickpacker/go/21mm.stl",
+		"/Users/nickpacker/go/18mm.stl",
+		"/Users/nickpacker/go/15mm.stl",
+		"/Users/nickpacker/go/10mm.stl"
+	],
+	"find":
+	{
+		"height": 39.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "/Users/nickpacker/Documents/Arduino/TREMOLO/TREMOLO.ino",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 9621,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Arduino-like IDE/Arduino.sublime-syntax",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 24.0
+	},
+	"input":
+	{
+		"height": 37.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.SublimeLinter":
+	{
+		"height": 109.0
+	},
+	"output.deviot":
+	{
+		"height": 214.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"output.stino_build_panel":
+	{
+		"height": 190.0
+	},
+	"output.stino_panel":
+	{
+		"height": 179.0
+	},
+	"pinned_build_system": "",
+	"project": "stm32.sublime-project",
+	"replace":
+	{
+		"height": 44.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 207.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}
