@@ -16,7 +16,7 @@ DAC_MCP49xx dac(DAC_MCP49xx::MCP4921, SS_PIN);
 
 #define phototrans 9
 #define relay 8
-
+int delaytime = 2000;
 #define led1 0
 #define led2 1
 #define led3 6
@@ -24,7 +24,7 @@ DAC_MCP49xx dac(DAC_MCP49xx::MCP4921, SS_PIN);
 
 #define btn_onoff 3
 #define btn_wave 2
-
+ 
 #define ratepot A0
 #define depthpot A1
 #define shiftpot A2
@@ -164,7 +164,7 @@ void setup() {
   TCCR2A = 0x00;        //Timer2 Control Reg A: Wave Gen Mode normal
   TCCR2B = 0x05;        //Timer2 Control Reg B: Timer Prescaler set to 128
  
-  digitalWrite(phototrans,LOW);
+digitalWrite(phototrans, LOW);
   sine();
  
   //PORTB |= _BV(PB0);
@@ -234,19 +234,16 @@ void checkthings(){
 }
 
 void ONANDOFF() {
-
-
-
 if ((long)(micros() - last_micros) >= debouncing_time * 1000) {
-TOGGLE_SS_RELAY();
 TOGGLE_HW_RELAY();
 last_micros = micros();
-
 }
-
 }
 
 void TOGGLE_HW_RELAY(){
+
+digitalWrite(phototrans, HIGH);
+delayMicroseconds(delaytime);
 if (state == 0) {
       PORTB |= _BV(PB0); //8
       state = 1;
@@ -255,21 +252,13 @@ if (state == 0) {
       PORTB &= ~_BV(PB0); //8
       state = 0;
     }
-    TOGGLE_SS_RELAY();
+delayMicroseconds(delaytime);
+digitalWrite(phototrans, LOW);
+   
  } 
 
 
-void TOGGLE_SS_RELAY(){
-if (hate == 0) {
-    
-    digitalWrite(phototrans,HIGH);
-      hate = 1;
-    }
-    else {
-    digitalWrite(phototrans,LOW);
-     hate = 0;
-    }
-  }
+
 
  
   

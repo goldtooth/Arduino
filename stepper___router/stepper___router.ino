@@ -33,6 +33,7 @@ void setup() {
 pinMode(stp, OUTPUT);
 pinMode(dir, OUTPUT);
 pinMode(ena, OUTPUT);
+pinMode(13, OUTPUT);
 pinMode(stphorz, OUTPUT);
 pinMode(dirhorz, OUTPUT);
 pinMode(enahorz, OUTPUT);
@@ -114,8 +115,10 @@ digitalWrite(dir, HIGH);
 do {
 
 digitalWrite(stp, HIGH); // turn the LED on (HIGH is the voltage level)
+digitalWrite(13, HIGH); 
 delayMicroseconds(200); // wait for a second
 digitalWrite(stp, LOW); // turn the LED off by making the voltage LOW
+digitalWrite(13, LOW); 
 delayMicroseconds(200);
 vert = analogRead(vert_mag);
 } while (vert >= 500);
