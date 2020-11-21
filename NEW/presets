@@ -1,0 +1,209 @@
+PRESETS:
+
+    case 1:
+      /* PROFILE INFO */
+
+Q(1); //1, 3, 4, 2; 1 is stronge
+//gated?
+profilearray[1]  = 100; // 1 yes  - 0 no
+
+profilearray[2]  = 0;//4096-env_duty; //HP CENTRE VOLUME
+profilearray[3]  = 0;  //  HP Profile Variable or number
+
+profilearray[4]  = 4096; // BP CENTRE VOLUME
+profilearray[5]  = lightsag[trigger];//env_duty; //BP Profile Variable or number
+
+profilearray[6]  = 2000; // LP CENTRE VOLUME
+profilearray[7]  = -lightsag[trigger];  // LP Profile Variable or number
+
+
+//FREQUENCY KNOB
+profilearray[10]  = 4096; //higher scope of centre frequency knob*4
+profilearray[11]  = 2000; //lower scope of centre frequency knob
+
+//FREQUENCY AUDIO
+profilearray[8]  = env_duty; //BP Profile Variable or number; // Freq Profile, Variable or number
+profilearray[0] = 0; // top of the audio envelope
+profilearray[12] = 1000; // BOttom of the audio envelope
+
+//MASTER_PROFILE
+profilearray[9]  = 1; //Profile of Master
+break;
+
+
+  case 2:
+      /* PROFILE INFO */
+
+Q(1); //1, 3, 4, 2; 1 is stronge
+//gated?
+profilearray[1]  = 100; // 1 yes  - 0 no
+
+profilearray[2]  = 0;//4096-env_duty; //HP CENTRE VOLUME
+profilearray[3]  = 0;  //  HP Profile Variable or number
+
+profilearray[4]  = 0; // BP CENTRE VOLUME
+profilearray[5]  = 0;//env_duty; //BP Profile Variable or number
+
+profilearray[6]  = 4096; // LP CENTRE VOLUME
+profilearray[7]  = compress2[trigger];  // LP Profile Variable or number
+
+
+//FREQUENCY KNOB
+profilearray[10]  = 2000; //higher scope of centre frequency knob*4
+profilearray[11]  = 0; //lower scope of centre frequency knob
+
+//FREQUENCY AUDIO
+profilearray[8]  = env_duty; //BP Profile Variable or number; // Freq Profile, Variable or number
+profilearray[0] = 0; // top of the audio envelope
+profilearray[12] = 2500; // BOttom of the audio envelope
+
+//MASTER_PROFILE
+profilearray[9]  = 1; //Profile of Master
+break;
+
+//profilearray[1,1.0,4095,]        
+
+    case 3:
+      /* PROFILE INFO */
+
+Q(4); //1, 3, 4, 2; 1 is stronge
+//gated?
+profilearray[1]  = 100; // 1 yes  - 0 no
+
+profilearray[2]  = 0;//4096-env_duty; //HP CENTRE VOLUME
+profilearray[3]  = 0;  //  HP Profile Variable or number
+
+profilearray[4]  = 0; // BP CENTRE VOLUME
+profilearray[5]  = 0;//env_duty; //BP Profile Variable or number
+
+profilearray[6]  = 4096; // LP CENTRE VOLUME
+profilearray[7]  = compress2[trigger];  // LP Profile Variable or number
+
+
+//FREQUENCY KNOB
+profilearray[10]  = 4000; //higher scope of centre frequency knob*4
+profilearray[11]  = 1000; //lower scope of centre frequency knob
+
+//FREQUENCY AUDIO
+profilearray[8]  = env_duty; //BP Profile Variable or number; // Freq Profile, Variable or number
+profilearray[0] = 2500; // top of the audio envelope
+profilearray[12] = 0; // BOttom of the audio envelope
+
+//MASTER_PROFILE
+profilearray[9]  = 1; //Profile of Master
+break;
+
+   case 4:
+      /* PROFILE INFO */
+
+Q(1); //1, 3, 4, 2; 1 is stronge
+//gated?
+profilearray[1]  = 100; // 1 yes  - 0 no
+
+profilearray[2]  = 2000;//4096-env_duty; //HP CENTRE VOLUME
+profilearray[3]  = compress3[trigger];   //  HP Profile Variable or number
+
+profilearray[4]  = 0; // BP CENTRE VOLUME
+profilearray[5]  = 0;//env_duty; //BP Profile Variable or number
+
+profilearray[6]  = 4096; // LP CENTRE VOLUME
+profilearray[7]  = compress3[trigger];  // LP Profile Variable or number
+
+
+//FREQUENCY KNOB
+profilearray[10]  = 4000; //higher scope of centre frequency knob*4
+profilearray[11]  = 1000; //lower scope of centre frequency knob
+
+//FREQUENCY AUDIO
+profilearray[8]  = env_duty; //BP Profile Variable or number; // Freq Profile, Variable or number
+profilearray[0] = 2500; // top of the audio envelope
+profilearray[12] = 0; // BOttom of the audio envelope
+
+//MASTER_PROFILE
+profilearray[9]  = 1; //Profile of Master
+break;
+
+  case 5:
+      /* PROFILE INFO */
+
+Q(1); //1, 3, 4, 2; 1 is stronge
+//gated?
+profilearray[1]  = 100; // 1 yes  - 0 no
+
+profilearray[2]  = 2000;//4096-env_duty; //HP CENTRE VOLUME
+profilearray[3]  = (compress3[trigger]+digger)/2;   //  HP Profile Variable or number
+
+profilearray[4]  = 0; // BP CENTRE VOLUME
+profilearray[5]  = 0;//env_duty; //BP Profile Variable or number
+
+profilearray[6]  = 4096; // LP CENTRE VOLUME
+profilearray[7]  = digger;  // LP Profile Variable or number
+
+
+//FREQUENCY KNOB
+profilearray[10]  = 4000; //higher scope of centre frequency knob*4
+profilearray[11]  = 1000; //lower scope of centre frequency knob
+
+//FREQUENCY AUDIO
+profilearray[8]  = env_duty; //BP Profile Variable or number; // Freq Profile, Variable or number
+profilearray[0] = 4000; // top of the audio envelope
+profilearray[12] = 0; // BOttom of the audio envelope
+
+//MASTER_PROFILE
+profilearray[9]  = 1; //Profile of Master
+break;
+    
+    case 6:
+      /* PROFILE INFO */
+
+Q(1); //1, 3, 4, 2; 1 is stronge
+//gated?
+profilearray[1]  = 100; // 1 yes  - 0 no
+
+profilearray[2]  = 0;//4096-env_duty; //HP CENTRE VOLUME
+profilearray[3]  = compress3[trigger];   //  HP Profile Variable or number
+
+profilearray[4]  = 4096; // BP CENTRE VOLUME
+profilearray[5]  = -compress3[trigger];//env_duty; //BP Profile Variable or number
+
+profilearray[6]  = 4096; // LP CENTRE VOLUME
+profilearray[7]  = 0;  // LP Profile Variable or number
+
+
+//FREQUENCY KNOB
+profilearray[10]  = 4000; //higher scope of centre frequency knob*4
+profilearray[11]  = 1000; //lower scope of centre frequency knob
+
+//FREQUENCY AUDIO
+profilearray[8]  = env_duty; //BP Profile Variable or number; // Freq Profile, Variable or number
+profilearray[0] = 0; // top of the audio envelope
+profilearray[12] = 4000; // BOttom of the audio envelope
+
+//MASTER_PROFILE
+profilearray[9]  = 1; //Profile of Master
+break;
+
+
+
+
+
+
+//put into array?
+Q(1); //1, 3, 4, 2; 1 is stronger
+profilearray[0] = 1; // envelope up or down
+profilearray[1]  = 1.0; // envelope depth as decimal
+profilearray[2]  = 0; //  HP Profile Variable or number
+profilearray[3]  = 4095; //BP Profile Variable or number
+profilearray[4]  = 0; // LP Profile Variable or number
+profilearray[5]  = env; // Freq Profile, Variable or number
+profilearray[6]  = 1; //Profile of Master
+profilearray[7]  = 3000; //higher scope of centre frequency knob
+profilearray[8]  = 0; //lower scope of centre frequency knob
+        /* PROFILE INFO */
+ 
+ 
+ profilearray[9]  = 1; //Profile of Master
+ profilearray[10]  = 4000; //Profile of Master
+ profilearray[11]  = 1000; //Profile of Master
+ profilearray[12]  = 0; //Profile of Master.
+ 

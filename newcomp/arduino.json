@@ -1,0 +1,7 @@
+{
+    "board": "atmega:avr:atmega328",
+    "configuration": "clock=external20,cpu=atmega328",
+    "port": "/dev/cu.usbmodem1D11131",
+    "programmer": "Arduino as ISP",
+    "sketch": "COMP/COMP.ino"
+}

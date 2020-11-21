@@ -1,0 +1,7 @@
+{
+    "board": "atmega:avr:atmega328",
+    "configuration": "clock=external20,cpu=atmega328",
+    "port": "/dev/tty.wchusbserial1d11120",
+    "programmer": "Arduino as ISP",
+    "sketch": "dual.ino"
+}

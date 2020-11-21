@@ -1,0 +1,7 @@
+{
+    "programmer": "AVR ISP",
+    "board": "attiny:avr:ATtinyX5",
+    "configuration": "cpu=attiny45,clock=internal16",
+    "port": "/dev/tty.usbmodem1D11301",
+    "sketch": "ATTINY45_BYPASS.ino"
+}

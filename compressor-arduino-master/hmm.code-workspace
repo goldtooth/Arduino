@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "/Users/nickpacker/Documents/Arduino/libraries"
+		}
+	],
+	"settings": {
+		"C_Cpp.errorSquiggles": "Enabled",
+		"files.associations": {
+			"memory": "cpp"
+		}
+
+	}
+}

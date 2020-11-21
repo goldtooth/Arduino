@@ -1,0 +1,7 @@
+{
+    "board": "atmega:avr:atmega328",
+    "configuration": "clock=external20,cpu=atmega328",
+    "sketch": "GT_COMPRESSOR.ino",
+    "port": "/dev/tty.wchusbserial1d1130",
+    "programmer": "Arduino as ISP"
+}
